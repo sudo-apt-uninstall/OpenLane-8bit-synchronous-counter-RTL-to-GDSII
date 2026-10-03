@@ -4,12 +4,23 @@ A complete open-source digital implementation flow: Verilog RTL taken all the wa
 manufacturable GDSII layout on the **Semi-Conductor Laboratory (SCL) 0.8 µm open PDK**,
 with **zero DRC violations**, **LVS matched**, and **timing closed**.
 
+![Final layout — 8-bit synchronous counter on SCL CP8D](docs/images/layout.png)
+
+*Final GDSII. Blue horizontal bars are metal1 power and ground rails across 12
+placement rows; magenta is metal2 signal routing, concentrated where the 30 logic
+cells sit. The remainder of each row is filler. Die is 800 × 800 µm.*
+
 | | |
 |---|---|
 | **Design** | 8-bit synchronous binary up-counter, modulo-256 |
 | **Process** | SCL CP8D — 0.8 µm, 5 V, twin-tub, single-poly, **2 metal layers** |
 | **Flow** | OpenLane 1.0 · Yosys · OpenROAD · OpenSTA · OpenRCX · KLayout |
-| **Result** | 30 standard cells · 800 × 800 µm die · **0 DRC** · **LVS match** · ~120 MHz |
+| **Cells** | 30 standard cells |
+| **Die** | 800 × 800 µm, 12 placement rows |
+| **DRC** | **0 violations** across ~70 rule categories |
+| **LVS** | **netlists match** |
+| **Timing** | wns 0.00 · tns 0.00 — setup +91.72 ns, hold +2.84 ns |
+| **Max frequency** | **≈ 120 MHz** (8.28 ns critical path) |
 
 ---
 
@@ -137,28 +148,76 @@ wide gates on older nodes.
 
 ---
 
-## Repository layout
+## What is in this repository
+
+Every artifact produced by the flow is included, so the results above can be inspected
+without re-running anything.
 
 ```
-rtl/cnt8.v                      RTL source
-tb/tb_cnt8.v                    self-checking testbench
-config/config.json              OpenLane configuration
-config/pin_order.cfg            pin placement by die edge
-flow/*.tcl                      floorplan, PDN, placement, CTS, routing, RCX, STA
-results/synthesis/              gate-level netlist
-results/floorplan/              floorplan and power-grid DEF
-results/placement/              placed DEF
-results/cts/                    post-CTS DEF
-results/routing/                routed DEF, DRC report, simulation netlists
-results/spef/                   extracted parasitics
-results/sta/                    timing reports and SDF
-results/gds/                    GDSII, CDL, DRC report, LVS database
-docs/images/                    layout screenshots
+rtl/cnt8.v                          RTL source
+tb/tb_cnt8.v                        self-checking testbench
+
+config/config.json                  OpenLane configuration
+config/pin_order.cfg                pin placement by die edge
+
+flow/yosys_script.tcl               synthesis
+flow/floorplan_cp8d.tcl             floorplan
+flow/pdn_cp8d.tcl  pdn_order.tcl    power distribution network
+flow/placement_cp8d.tcl             placement
+flow/cts_cp8d.tcl                   clock tree synthesis
+flow/routing_cp8d.tcl               global and detailed routing
+flow/rcx_cp8d.tcl                   parasitic extraction
+flow/run_sta.tcl                    static timing analysis
+flow/script_openlane.tcl            runs the whole chain
+
+results/synthesis/cnt8_sys.v        gate-level netlist
+results/floorplan/cnt8.def          floorplan
+results/floorplan/cnt8_pdn.def      with power grid
+results/placement/cnt8_pl.def       placed
+results/cts/cnt8_plcts.def          post-CTS
+results/routing/cnt8_rt.def         routed
+results/routing/drc.rpt             router DRC - empty
+results/routing/cnt8_rt_sim.v       netlist for gate-level simulation
+results/routing/cnt8_rt_pwr.v       netlist with power pins
+results/spef/cnt8_rt.spef           extracted parasitics
+results/sta/cnt8_rt.sdf             back-annotation delays
+results/sta/timing_report.txt       full setup and hold paths
+results/sta/wns_report.txt          worst negative slack
+results/sta/tns_report.txt          total negative slack
+results/gds/cnt8_top.gds            final layout
+results/gds/cnt8_top.cdl            LVS reference netlist
+results/gds/scl_drc.txt             signoff DRC report
+results/gds/cnt8_top.lvsdb          LVS database
+
+docs/images/layout.png              layout screenshot
 ```
 
 ---
 
-## Reproducing
+## Simulation
+
+**RTL:**
+```bash
+cd tb
+iverilog -o tb.vvp tb_cnt8.v ../rtl/cnt8.v
+vvp tb.vvp
+gtkwave tb_cnt8.vcd
+```
+
+**Gate level**, against the routed netlist and SCL's cell models:
+```bash
+iverilog -gspecify -o tb_gl.vvp \
+    $PDK_ROOT/$PDK/libs.ref/digital_cp8d/verilog/cp8d.v \
+    ../results/routing/cnt8_rt_sim.v tb_cnt8.v
+vvp tb_gl.vvp
+```
+
+`-gspecify` is required, or Icarus silently discards the `specify`-block path delays
+in the cell models and the simulation runs with zero delay.
+
+---
+
+## Reproducing the flow
 
 Requires OpenLane 1.0, the SCL CP8D PDK, KLayout 0.30.5 and Icarus Verilog.
 
@@ -215,6 +274,8 @@ stale header text in SCL's script, not the wrong deck.
 | OpenRCX | bundled | parasitic extraction |
 | KLayout | 0.30.5 | DEF→GDS, signoff DRC and LVS |
 | Icarus Verilog | 12.0 | simulation |
+
+Host platform: RHEL 9, rootless Podman via the `podman-docker` shim.
 
 ## Acknowledgements
 
