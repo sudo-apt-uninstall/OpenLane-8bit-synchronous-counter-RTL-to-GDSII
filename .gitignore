@@ -1,0 +1,29 @@
+# rename this file to .gitignore
+#
+# OpenLane / OpenROAD tool databases and scratch - large, regenerable,
+# and of no archival value.
+
+*.odb
+*.enc
+*.enc.dat/
+runs/
+work/
+xcelium.d/
+.rs_eda.tstamp
+
+# simulation output
+*.vvp
+*.vcd
+*.lxt
+*.fst
+
+# editor / OS noise
+*.swp
+*~
+.DS_Store
+
+# The SCL PDK itself is NOT redistributed here.
+# Obtain it from echiphub.in.
+my_dtech_cp8d/
+open_pdks/
+*.lib

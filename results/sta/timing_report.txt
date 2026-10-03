@@ -1,0 +1,59 @@
+Startpoint: _59_ (rising edge-triggered flip-flop clocked by CLK)
+Endpoint: _59_ (rising edge-triggered flip-flop clocked by CLK)
+Path Group: CLK
+Path Type: min
+
+  Delay    Time   Description
+---------------------------------------------------------
+   0.00    0.00   clock CLK (rise edge)
+   0.00    0.00   clock network delay (ideal)
+   0.00    0.00 ^ _59_/C (DFFL11)
+   2.17    2.17 ^ _59_/Q (DFFL11)
+   0.52    2.69 v _49_/OUT1 (ORND00)
+   0.68    3.37 ^ _51_/OUT1 (ADNR00)
+   0.00    3.37 ^ _59_/D (DFFL11)
+           3.37   data arrival time
+
+   0.00    0.00   clock CLK (rise edge)
+   0.00    0.00   clock network delay (ideal)
+   0.00    0.00   clock reconvergence pessimism
+           0.00 ^ _59_/C (DFFL11)
+   0.53    0.53   library hold time
+           0.53   data required time
+---------------------------------------------------------
+           0.53   data required time
+          -3.37   data arrival time
+---------------------------------------------------------
+           2.84   slack (MET)
+
+
+Startpoint: _53_ (rising edge-triggered flip-flop clocked by CLK)
+Endpoint: _58_ (rising edge-triggered flip-flop clocked by CLK)
+Path Group: CLK
+Path Type: max
+
+  Delay    Time   Description
+---------------------------------------------------------
+   0.00    0.00   clock CLK (rise edge)
+   0.00    0.00   clock network delay (ideal)
+   0.00    0.00 ^ _53_/C (DFFL11)
+   2.80    2.80 v _53_/Q (DFFL11)
+   2.50    5.31 ^ _44_/OUT1 (NND600)
+   1.83    7.14 ^ _47_/OUT1 (XNR200)
+   0.78    7.93 v _48_/OUT1 (NOR200)
+   0.00    7.93 v _58_/D (DFFL11)
+           7.93   data arrival time
+
+ 100.00  100.00   clock CLK (rise edge)
+   0.00  100.00   clock network delay (ideal)
+   0.00  100.00   clock reconvergence pessimism
+         100.00 ^ _58_/C (DFFL11)
+  -0.35   99.65   library setup time
+          99.65   data required time
+---------------------------------------------------------
+          99.65   data required time
+          -7.93   data arrival time
+---------------------------------------------------------
+          91.72   slack (MET)
+
+

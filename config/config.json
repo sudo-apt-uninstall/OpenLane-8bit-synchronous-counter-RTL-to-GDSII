@@ -1,0 +1,16 @@
+{
+    "DESIGN_NAME": "cnt8",
+    "DESIGN_TOP_CELL_NAME": "cnt8_top",
+    "DIE_AREA": "0 0 800 800",
+    "CORE_AREA": "100 100 700 700",
+    "CLOCK_PERIOD": 100,
+    "CLOCK_PORT": "clk",
+    "CLOCK_NET": "ref::$CLOCK_PORT",
+    "RUN_CTS": true,
+    "PL_TARGET_DENSITY": 0.45,
+    "FP_PIN_ORDER_CFG": "dir::pin_order.cfg",
+    "FP_PDN_SKIPTRIM": true,
+    "PLACE_SITE": "CORE",
+    "PLACE_SITE_WIDTH": 3.9,
+    "PLACE_SITE_HEIGHT": 32.35
+}
